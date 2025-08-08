@@ -1,13 +1,9 @@
-import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, VersioningType, Logger } from '@nestjs/common';
-import { AppModule } from './modules/app.module';
 import { CrudExceptionFilter } from '@foryourdev/nestjs-crud';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { ENV_KEYS, HTTP_CONSTANTS } from './common/constants/app.constants';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
-import {
-  HTTP_CONSTANTS,
-  ENV_KEYS,
-  LOG_CONSTANTS,
-} from './common/constants/app.constants';
+import { AppModule } from './modules/app.module';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -24,6 +20,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:3000',
       'http://localhost:5173',
+      'https://chat.for-landing.com',
       process.env[ENV_KEYS.FRONTEND_URL],
     ].filter(Boolean),
     credentials: true,
