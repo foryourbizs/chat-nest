@@ -28,13 +28,16 @@ export class OpenAIConfig {
    */
   private static createClient(): OpenAI {
     const apiKey = this._configService.get<string>(ENV_KEYS.OPEN_API_KEY);
+    const secretKey = this._configService.get<string>(
+      ENV_KEYS.OPEN_API_SECRET_KEY,
+    );
 
     if (!apiKey) {
       throw new Error('OPEN_API_KEY is required but not provided');
     }
 
     return new OpenAI({
-      apiKey: apiKey,
+      apiKey: secretKey,
       // Optional: organization key를 사용하는 경우
       // organization: this._configService.get<string>(ENV_KEYS.OPEN_API_SECRET_KEY),
     });

@@ -1,5 +1,5 @@
-import { Crud } from '@foryourdev/nestjs-crud';
-import { Controller } from '@nestjs/common';
+import { BeforeCreate, Crud } from '@foryourdev/nestjs-crud';
+import { Controller, Logger } from '@nestjs/common';
 import { Conversation } from '../../conversation.entity';
 import { ConversationService } from '../../conversation.service';
 
@@ -9,21 +9,36 @@ import { ConversationService } from '../../conversation.service';
   only: ['index', 'show', 'create', 'update', 'destroy'],
 
   // 필터링 옵션
-  allowedFilters: ['characterId', 'isActive', 'userId', 'title'],
+  allowedFilters: ['characterId', 'isActive', 'title'],
 
-  // 정렬은 쿼리 파라미터로 지원 (?sort=field,order)
+  // 생성/수정 시 허용할 파라미터
+  allowedParams: [
+    'title',
+    'characterId',
+    'messageCount',
+    'totalTokens',
+    'isActive',
+  ],
 
   // 관계 조회 옵션
-  allowedIncludes: ['user', 'character', 'messages'],
-
-  // 라우트 설정 - 테스트용으로 인증 불필요
+  allowedIncludes: ['character', 'messages'],
 })
 @Controller({
   path: 'conversations',
   version: '1',
 })
 export class ConversationController {
+  private readonly logger = new Logger(ConversationController.name);
+
   constructor(public readonly crudService: ConversationService) {}
+
+  @BeforeCreate()
+  async beforeCreate(model: Conversation) {
+    model.title = 'test';
+    model.characterId = 8;
+
+    return model;
+  }
 
   // 모든 CRUD 기능들은 @Crud 데코레이터에 의해 자동 생성됨 (테스트용 - 인증 불필요)
   // GET /api/v1/conversations - 전체 대화 목록 (필터링, 페이지네이션, 정렬 지원)

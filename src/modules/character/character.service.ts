@@ -13,8 +13,8 @@ export class CharacterService extends CrudService<Character> {
     super(characterRepository);
   }
 
-  // 사용자별 캐릭터 조회는 CRUD 필터링으로 대체됨: GET /characters (자동 필터링)
-  // 캐릭터 상세 조회도 CRUD로 대체됨: GET /characters/:id (자동 소유권 확인)
+  // 모든 CRUD 기능은 @Crud 데코레이터에 의해 자동 생성됨
+  // 커스텀 로직 없이 순수 CRUD만 사용
 
   /**
    * 캐릭터 사용 횟수 증가
@@ -35,7 +35,6 @@ export class CharacterService extends CrudService<Character> {
       where: { isActive: true },
       order: { usageCount: 'DESC' },
       take: limit,
-      relations: ['user'],
       select: {
         id: true,
         name: true,
@@ -44,10 +43,6 @@ export class CharacterService extends CrudService<Character> {
         personality: true,
         usageCount: true,
         createdAt: true,
-        user: {
-          id: true,
-          name: true,
-        },
       },
     });
   }

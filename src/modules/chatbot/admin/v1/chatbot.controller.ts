@@ -32,7 +32,7 @@ export class AdminChatbotController {
   @Get('system-stats')
   @UseGuards(AdminGuard)
   async getSystemStats(@CurrentUser() currentUser: CurrentUserData) {
-    const totalUsers = await this.chatbotService.getUserMessageStats(1); // 전체 통계
+    const totalUsers = await this.chatbotService.getServiceStats(); // 전체 통계
 
     return {
       message: '시스템 전체 ChatBot 사용 통계',
@@ -52,7 +52,7 @@ export class AdminChatbotController {
     @Body() sendMessageDto: SendMessageDto,
   ) {
     // 관리자는 모든 대화에 메시지를 보낼 수 있음
-    const result = await this.chatbotService.sendMessage(1, sendMessageDto); // 테스트용 사용자 ID
+    const result = await this.chatbotService.sendMessage(sendMessageDto); // 공개 서비스
 
     return {
       ...result,
@@ -117,7 +117,7 @@ export class AdminChatbotController {
   @UseGuards(AdminGuard)
   async getTokenUsageMonitoring(@CurrentUser() currentUser: CurrentUserData) {
     // 실제로는 더 세밀한 토큰 사용량 분석
-    const stats = await this.chatbotService.getUserMessageStats(1);
+    const stats = await this.chatbotService.getServiceStats();
 
     return {
       message: '토큰 사용량 모니터링',
@@ -141,7 +141,7 @@ export class AdminChatbotController {
     @Param('userId', ParseIntPipe) userId: number,
     @CurrentUser() currentUser: CurrentUserData,
   ) {
-    const userStats = await this.chatbotService.getUserMessageStats(userId);
+    const userStats = await this.chatbotService.getServiceStats(); // 공개 서비스에서는 전체 통계만 제공
 
     return {
       message: `사용자 ID ${userId}의 ChatBot 활동 내역`,

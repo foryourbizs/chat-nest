@@ -46,12 +46,9 @@ export class ChatbotService {
   }
 
   /**
-   * 사용자 메시지 전송 및 AI 응답 생성
+   * 사용자 메시지 전송 및 AI 응답 생성 - 공개 서비스
    */
-  async sendMessage(
-    userId: number,
-    sendMessageDto: SendMessageDto,
-  ): Promise<{
+  async sendMessage(sendMessageDto: SendMessageDto): Promise<{
     userMessage: Message;
     assistantMessage: Message;
   }> {
@@ -78,10 +75,7 @@ export class ChatbotService {
 
       // 대화 컨텍스트 구성
       const { systemPrompt, messages } =
-        await this.messageService.buildConversationContext(
-          conversationId,
-          userId,
-        );
+        await this.messageService.buildConversationContext(conversationId);
 
       // AI 응답 생성
       const aiResponse = await this.generateOpenAIResponse(
@@ -114,7 +108,7 @@ export class ChatbotService {
       }
 
       this.logger.log(
-        `AI response generated for conversation ${conversationId}, user ${userId}`,
+        `AI response generated for conversation ${conversationId} (공개 서비스)`,
       );
 
       return {
@@ -354,7 +348,6 @@ export class ChatbotService {
    */
   async getConversationSummary(
     conversationId: number,
-    userId?: number, // 테스트용으로 선택적
   ): Promise<{ summary: string }> {
     try {
       const summary = await this.generateConversationSummary(conversationId);
@@ -366,9 +359,9 @@ export class ChatbotService {
   }
 
   /**
-   * 사용자 메시지 통계 (테스트용 - 간단한 구현)
+   * 전체 서비스 통계 (공개 서비스용)
    */
-  async getUserMessageStats(userId: number) {
+  async getServiceStats() {
     try {
       // 테스트용 간단한 통계 (실제로는 더 복잡한 쿼리 필요)
       const totalMessages = await this.messageService.messageRepository.count({

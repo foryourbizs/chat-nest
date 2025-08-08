@@ -1,0 +1,292 @@
+# AI 챗봇 플랫폼 프론트엔드 개발 규칙
+
+## 프로젝트 개요
+- **백엔드**: NestJS + PostgreSQL + TypeORM 기반 AI 챗봇 플랫폼 API
+- **프론트엔드**: Next.js 14 (App Router) + TypeScript + Tailwind CSS
+- **AI 모델**: OpenAI GPT-4o, GPT-4.1, GPT-5 지원
+- **주요 기능**: 캐릭터별 AI 대화, 대화 관리, 관리자 대시보드
+
+## 기술 스택 및 라이브러리
+- **프레임워크**: Next.js 15 (App Router 필수 사용)
+- **언어**: TypeScript (strict mode)
+- **스타일링**: Tailwind CSS + shadcn/ui 컴포넌트
+- **상태 관리**: Zustand (전역 상태용)
+- **API 통신**: TanStack Query (React Query) + Axios
+- **UI 라이브러리**: shadcn/ui, Radix UI, Lucide React 아이콘
+- **폼 관리**: React Hook Form + Zod validation
+- **애니메이션**: Framer Motion (선택적)
+
+## 백엔드 API 구조 이해
+```
+Base URL: http://localhost:3000
+
+### 캐릭터 API
+- GET /api/v1/characters - 캐릭터 목록 조회
+- POST /api/v1/characters - 캐릭터 생성
+- GET /api/v1/characters/:id - 특정 캐릭터 조회
+- PUT /api/v1/characters/:id - 캐릭터 수정
+- DELETE /api/v1/characters/:id - 캐릭터 삭제
+
+### 대화 API
+- GET /api/v1/conversations - 대화 목록 조회
+- POST /api/v1/conversations - 새 대화 시작
+- GET /api/v1/conversations/:id - 특정 대화 조회
+- DELETE /api/v1/conversations/:id - 대화 삭제
+
+### 메시지 API
+- GET /api/v1/messages/conversation/:conversationId - 특정 대화의 메시지들
+- GET /api/v1/messages/:id - 특정 메시지 조회
+
+### AI 챗봇 API (핵심)
+- POST /api/v1/chatbot/send-message - AI와 대화 (메시지 전송 및 응답 받기)
+  Request: { content: string, conversationId: number }
+  Response: { userMessage: Message, aiMessage: Message }
+
+## 프론트엔드 구조 및 규칙
+
+### 1. 디렉터리 구조 (App Router)
+```
+src/
+├── app/
+│   ├── (chat)/              # 채팅 관련 페이지 그룹
+│   │   ├── page.tsx         # 메인 채팅 페이지 "/"
+│   │   ├── characters/      # 캐릭터 관리
+│   │   └── conversations/   # 대화 목록
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── loading.tsx
+├── components/
+│   ├── ui/                 # shadcn/ui 컴포넌트
+│   ├── chat/              # 채팅 관련 컴포넌트
+│   ├── character/         # 캐릭터 관련 컴포넌트
+│   ├── conversation/      # 대화 관련 컴포넌트
+│   └── layout/           # 레이아웃 컴포넌트
+├── hooks/                # 커스텀 훅
+├── lib/                  # 유틸리티, API 클라이언트
+├── store/               # Zustand 스토어
+├── types/              # TypeScript 타입 정의
+└── utils/             # 헬퍼 함수들
+```
+
+### 2. TypeScript 타입 정의
+백엔드 엔티티와 일치하는 타입들을 정의:
+
+```typescript
+// types/index.ts
+export interface Character {
+  id: number;
+  name: string;
+  description: string;
+  systemPrompt: string;
+  userId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Conversation {
+  id: number;
+  title: string;
+  userId: number;
+  characterId: number;
+  character?: Character;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Message {
+  id: number;
+  content: string;
+  role: 'user' | 'assistant';
+  conversationId: number;
+  createdAt: string;
+}
+
+export interface SendMessageRequest {
+  content: string;
+  conversationId: number;
+}
+
+export interface SendMessageResponse {
+  userMessage: Message;
+  aiMessage: Message;
+}
+```
+
+### 3. API 클라이언트 구현
+```typescript
+// lib/api.ts
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+});
+
+export const chatbotApi = {
+  sendMessage: (data: SendMessageRequest) => 
+    api.post<SendMessageResponse>('/api/v1/chatbot/send-message', data),
+};
+
+export const charactersApi = {
+  getAll: () => api.get<Character[]>('/api/v1/characters'),
+  create: (data: CreateCharacterDto) => api.post<Character>('/api/v1/characters', data),
+  // ... 기타 CRUD 메서드
+};
+```
+
+### 4. 상태 관리 (Zustand)
+```typescript
+// store/chat.ts
+interface ChatState {
+  currentConversation: Conversation | null;
+  messages: Message[];
+  isLoading: boolean;
+  selectedCharacter: Character | null;
+  // actions
+  setCurrentConversation: (conversation: Conversation) => void;
+  addMessage: (message: Message) => void;
+  setSelectedCharacter: (character: Character) => void;
+}
+```
+
+## UI/UX 개발 규칙
+
+### 1. 디자인 원칙
+- **모던하고 직관적**: 깔끔한 인터페이스, 명확한 네비게이션
+- **반응형**: 모바일 퍼스트 접근, Tailwind 브레이크포인트 활용
+- **접근성**: ARIA 레이블, 키보드 네비게이션 지원
+- **다크모드**: 라이트/다크 테마 토글 지원
+
+### 2. 컴포넌트 작성 규칙
+- **함수형 컴포넌트** 우선 사용
+- **TypeScript props 인터페이스** 필수 정의
+- **shadcn/ui 컴포넌트** 최대한 활용
+- **재사용 가능한 컴포넌트** 지향
+- **컴포넌트명은 PascalCase**
+
+### 3. 채팅 인터페이스 요구사항
+- **실시간 메시지 표시**: 사용자 메시지와 AI 응답을 구분
+- **타이핑 인디케이터**: AI 응답 대기 중 로딩 표시
+- **메시지 기록**: 스크롤 가능한 대화 히스토리
+- **캐릭터 선택**: 드롭다운 또는 카드 형태로 캐릭터 변경
+- **새 대화 시작**: 버튼 클릭으로 새로운 대화 생성
+- **대화 목록**: 사이드바에 이전 대화들 표시
+
+### 4. 페이지별 요구사항
+
+#### 메인 채팅 페이지 (/)
+- 중앙에 채팅 인터페이스
+- 좌측 사이드바: 대화 목록, 캐릭터 선택
+- 우측 패널: 현재 캐릭터 정보 (선택적)
+- 하단: 메시지 입력창 + 전송 버튼
+
+#### 캐릭터 관리 (/characters)
+- 캐릭터 카드 그리드 레이아웃
+- 새 캐릭터 생성 모달
+- 캐릭터 편집/삭제 기능
+- 캐릭터별 대화 통계
+
+#### 대화 목록 (/conversations)
+- 대화 목록을 카드 또는 리스트로 표시
+- 검색 및 필터링 기능
+- 대화 삭제 기능
+- 각 대화의 마지막 메시지 미리보기
+
+## 성능 및 최적화
+
+### 1. Next.js 최적화
+- **App Router** 활용한 중첩 라우팅
+- **Server Components** 적극 활용
+- **Client Components**는 필요시에만 ("use client")
+- **Dynamic imports**로 코드 스플리팅
+- **Image 최적화**: next/image 사용
+
+### 2. API 통신 최적화
+- **TanStack Query**로 캐싱 및 background 업데이트
+- **Optimistic updates**로 UX 개선
+- **Error handling** 일관성 있게 구현
+- **Loading states** 적절한 스켈레톤 UI
+
+### 3. 상태 관리 최적화
+- **Zustand**로 전역 상태 최소화
+- **React Query**로 서버 상태 관리
+- **로컬 상태**는 useState/useReducer 활용
+
+## 코딩 스타일 및 규칙
+
+### 1. 코드 품질
+- **ESLint + Prettier** 필수 설정
+- **TypeScript strict mode** 활성화
+- **절대 경로 imports** 설정 (@/components 등)
+- **Early return pattern** 활용
+
+### 2. 컴포넌트 작성 패턴
+```typescript
+'use client'; // Client Component인 경우에만
+
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+
+interface ComponentProps {
+  title: string;
+  onAction: () => void;
+}
+
+export function Component({ title, onAction }: ComponentProps) {
+  const [loading, setLoading] = useState(false);
+
+  return (
+    <div className="flex flex-col gap-4">
+      <h2 className="text-2xl font-bold">{title}</h2>
+      <Button onClick={onAction} disabled={loading}>
+        {loading ? 'Loading...' : 'Action'}
+      </Button>
+    </div>
+  );
+}
+```
+
+### 3. API 호출 패턴 (TanStack Query 활용)
+```typescript
+// hooks/useMessages.ts
+export function useMessages(conversationId: number) {
+  return useQuery({
+    queryKey: ['messages', conversationId],
+    queryFn: () => messagesApi.getByConversation(conversationId),
+    enabled: !!conversationId,
+  });
+}
+
+export function useSendMessage() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: chatbotApi.sendMessage,
+    onSuccess: (data, variables) => {
+      // Optimistic update
+      queryClient.invalidateQueries(['messages', variables.conversationId]);
+    },
+  });
+}
+```
+
+## 환경 변수
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000
+NEXT_PUBLIC_APP_NAME="AI 챗봇 플랫폼"
+```
+
+## 개발 우선순위
+1. **기본 채팅 인터페이스** 구현 (핵심 기능)
+2. **캐릭터 선택 및 관리** 기능
+3. **대화 목록 및 관리** 기능  
+4. **반응형 디자인** 적용
+5. **관리자 대시보드** 구현
+6. **고급 기능** (검색, 필터링, 통계 등)
+
+## 주의사항
+- **백엔드 API가 AuthGuard 없음**: 현재 테스트용으로 인증 로직 제거된 상태
+- **userId는 고정값 1 사용**: 백엔드에서 testUserId = 1로 하드코딩됨
+- **실제 OpenAI API 사용**: 비용 발생 가능하므로 테스트 시 주의
+- **컨텍스트 제한**: 최대 100개 메시지까지 기억 (GPT-4o 기준)
+
+이 규칙을 따라 **현대적이고 사용자 친화적인 AI 챗봇 플랫폼 프론트엔드**를 개발하세요!

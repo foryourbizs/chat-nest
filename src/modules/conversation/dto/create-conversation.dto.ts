@@ -7,8 +7,5 @@ export class CreateConversationDto {
   title?: string;
 
   @IsInt()
-  userId: number;
-
-  @IsInt()
   characterId: number;
 }

@@ -79,11 +79,10 @@ export class MessageService extends CrudService<Message> {
   }
 
   /**
-   * 대화 컨텍스트 구성 (AI 모델용)
+   * 대화 컨텍스트 구성 (AI 모델용) - 공개 서비스
    */
   async buildConversationContext(
     conversationId: number,
-    userId: number,
     maxMessages: number = 20,
   ): Promise<{ systemPrompt: string; messages: Message[] }> {
     // 대화와 캐릭터 정보 조회

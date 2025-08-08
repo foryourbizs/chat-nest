@@ -24,13 +24,11 @@ export class ChatbotController {
   // 일반적인 CRUD는 각각의 전용 컨트롤러에서 처리
 
   /**
-   * 메시지 전송 및 AI 응답 받기 (테스트용 - 고정 사용자 ID 사용)
+   * 메시지 전송 및 AI 응답 받기 (공개 서비스)
    */
   @Post('send-message')
   async sendMessage(@Body() sendMessageDto: SendMessageDto) {
-    // 테스트용 고정 사용자 ID (1번 사용자로 가정)
-    const testUserId = 1;
-    return await this.chatbotService.sendMessage(testUserId, sendMessageDto);
+    return await this.chatbotService.sendMessage(sendMessageDto);
   }
 
   // 대화의 메시지 목록 조회는 MessageController로 이동됨
@@ -44,21 +42,17 @@ export class ChatbotController {
   async getConversationSummary(
     @Param('conversationId', ParseIntPipe) conversationId: number,
   ) {
-    // 테스트용이므로 소유권 확인 없이 요약 생성
-    const summary = await this.chatbotService.getConversationSummary(
-      conversationId,
-      1, // 테스트용 고정 사용자 ID
-    );
-    return { summary };
+    // 공개 서비스이므로 소유권 확인 없이 요약 생성
+    const summary =
+      await this.chatbotService.getConversationSummary(conversationId);
+    return summary;
   }
 
   /**
-   * 사용자 메시지 통계 (테스트용 - 고정 사용자)
+   * 전체 서비스 통계 (공개 서비스)
    */
   @Get('stats')
-  async getMessageStats() {
-    // 테스트용 고정 사용자 ID
-    const testUserId = 1;
-    return await this.chatbotService.getUserMessageStats(testUserId);
+  async getServiceStats() {
+    return await this.chatbotService.getServiceStats();
   }
 }

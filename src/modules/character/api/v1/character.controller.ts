@@ -5,9 +5,18 @@ import { CharacterService } from '../../character.service';
 
 @Crud({
   entity: Character,
-  allowedFilters: ['name', 'isActive', 'userId', 'usageCount'],
-  allowedIncludes: ['user', 'conversations'],
-  only: ['index', 'show', 'create', 'update', 'destroy'],
+  allowedFilters: ['name', 'isActive', 'usageCount'],
+  allowedParams: [
+    'name',
+    'description',
+    'avatar',
+    'personality',
+    'systemPrompt',
+    'isActive',
+    'usageCount',
+  ],
+  allowedIncludes: ['conversations'],
+  only: ['index', 'show', 'create', 'update', 'destroy'], // 순수 CRUD 데코레이터 사용
 })
 @Controller({
   path: 'characters',

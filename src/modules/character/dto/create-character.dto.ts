@@ -28,10 +28,11 @@ export class CreateCharacterDto {
   @IsString()
   systemPrompt: string;
 
-  @IsInt()
-  userId: number;
-
   @IsOptional()
   @IsBoolean()
-  isActive?: boolean;
+  isActive?: boolean; // 기본값: true
+
+  @IsOptional()
+  @IsInt()
+  usageCount?: number; // 기본값: 0
 }
