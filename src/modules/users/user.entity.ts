@@ -12,6 +12,7 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -73,4 +74,11 @@ export class User extends BaseEntity {
   @IsOptional()
   @IsDateString()
   updatedAt: Date;
+
+  // Relations - string reference로 순환 의존성 방지
+  @OneToMany('Character', 'user')
+  characters: any[];
+
+  @OneToMany('Conversation', 'user')
+  conversations: any[];
 }

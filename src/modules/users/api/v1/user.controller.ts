@@ -25,7 +25,7 @@ import { AuthGuard } from 'src/guards/auth.guard';
   version: '1',
 })
 export class UserController {
-  constructor(public readonly crudService: UserService) { }
+  constructor(public readonly crudService: UserService) {}
 
   @Get('me')
   @UseGuards(AuthGuard)

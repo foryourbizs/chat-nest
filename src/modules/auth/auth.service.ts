@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   ERROR_MESSAGES,
-  SECURITY_CONSTANTS
+  SECURITY_CONSTANTS,
 } from 'src/common/constants/app.constants';
 
 export interface JwtPayload {
@@ -21,7 +21,7 @@ export interface TokenPair {
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
 
-  constructor(private readonly jwtService: JwtService) { }
+  constructor(private readonly jwtService: JwtService) {}
 
   private readonly JWT_SECRET = process.env.JWT_SECRET;
 
@@ -33,9 +33,11 @@ export class AuthService {
       return this.jwtService.sign(
         { id: payload.id, email: payload.email },
         {
-          expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRES_IN || SECURITY_CONSTANTS.DEFAULT_JWT_ACCESS_EXPIRES,
+          expiresIn:
+            process.env.JWT_ACCESS_TOKEN_EXPIRES_IN ||
+            SECURITY_CONSTANTS.DEFAULT_JWT_ACCESS_EXPIRES,
           secret: this.JWT_SECRET,
-        }
+        },
       );
     } catch (error) {
       this.logger.error('Failed to generate access token', error);
@@ -51,9 +53,11 @@ export class AuthService {
       return this.jwtService.sign(
         { id: payload.id, email: payload.email },
         {
-          expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRES_IN || SECURITY_CONSTANTS.DEFAULT_JWT_REFRESH_EXPIRES,
+          expiresIn:
+            process.env.JWT_REFRESH_TOKEN_EXPIRES_IN ||
+            SECURITY_CONSTANTS.DEFAULT_JWT_REFRESH_EXPIRES,
           secret: this.JWT_SECRET,
-        }
+        },
       );
     } catch (error) {
       this.logger.error('Failed to generate refresh token', error);
@@ -72,7 +76,7 @@ export class AuthService {
 
       const payload = this.jwtService.verify(token, {
         secret: this.JWT_SECRET,
-      }) as JwtPayload;
+      });
 
       // 페이로드 검증
       if (!payload.id || !payload.email) {

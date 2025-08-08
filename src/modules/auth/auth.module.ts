@@ -16,21 +16,18 @@ import { AdminGuard } from '../../guards/admin.guard';
     // 환경변수가 설정된 소셜 로그인 전략만 조건부 등록
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
       ? [GoogleStrategy]
-      : []
-    ),
-    ...(process.env.KAKAO_CLIENT_ID
-      ? [KakaoStrategy]
-      : []
-    ),
+      : []),
+    ...(process.env.KAKAO_CLIENT_ID ? [KakaoStrategy] : []),
     ...(process.env.NAVER_CLIENT_ID && process.env.NAVER_CLIENT_SECRET
       ? [NaverStrategy]
-      : []
-    ),
-    ...(process.env.APPLE_CLIENT_ID && process.env.APPLE_TEAM_ID && process.env.APPLE_KEY_ID && process.env.APPLE_PRIVATE_KEY
+      : []),
+    ...(process.env.APPLE_CLIENT_ID &&
+    process.env.APPLE_TEAM_ID &&
+    process.env.APPLE_KEY_ID &&
+    process.env.APPLE_PRIVATE_KEY
       ? [AppleStrategy]
-      : []
-    ),
+      : []),
   ],
   exports: [AuthService],
 })
-export class AuthModule { }
+export class AuthModule {}

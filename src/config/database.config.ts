@@ -7,13 +7,18 @@ import {
 import { Admin } from '../modules/admin/admin.entity';
 import { User } from '../modules/users/user.entity';
 
+// 새로운 모듈 구조에서 엔티티 import
+import { Character } from '../modules/character/character.entity';
+import { Conversation } from '../modules/conversation/conversation.entity';
+import { Message } from '../modules/message/message.entity';
+
 // 환경변수 로드
 dotenv.config();
 
 /**
  * 모든 엔티티 목록 (중앙 관리)
  */
-export const ENTITIES = [User, Admin];
+export const ENTITIES = [User, Admin, Character, Conversation, Message];
 
 /**
  * 공통 데이터베이스 설정

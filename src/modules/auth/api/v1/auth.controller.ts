@@ -120,9 +120,7 @@ export class AuthController {
         throw new UnauthorizedException(ERROR_MESSAGES.AUTH_HEADER_REQUIRED);
       }
 
-      const refreshToken = this.authService.extractBearerToken(
-        authHeader as string,
-      );
+      const refreshToken = this.authService.extractBearerToken(authHeader);
 
       // 리프레시 토큰 검증
       const decoded = this.authService.verifyToken(refreshToken);
@@ -169,7 +167,7 @@ export class AuthController {
         throw new UnauthorizedException(ERROR_MESSAGES.AUTH_HEADER_REQUIRED);
       }
 
-      const token = this.authService.extractBearerToken(authHeader as string);
+      const token = this.authService.extractBearerToken(authHeader);
 
       const decoded = this.authService.verifyToken(token);
 

@@ -6,10 +6,6 @@ import { CrudMetadataService } from './services/crud-metadata.service';
 
 @Module({
   controllers: [SchemaController],
-  providers: [
-    DevOnlyGuard,
-    SecurityValidationService,
-    CrudMetadataService,
-  ],
+  providers: [DevOnlyGuard, SecurityValidationService, CrudMetadataService],
 })
-export class SchemaModule { } 
+export class SchemaModule {}

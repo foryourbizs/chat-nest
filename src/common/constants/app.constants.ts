@@ -118,4 +118,9 @@ export const ENV_KEYS = {
 
   // 로그
   LOG_LEVEL: 'LOG_LEVEL',
-} as const; 
+
+  // OpenAI
+  OPEN_API_KEY: 'OPEN_API_KEY',
+  OPEN_API_SECRET_KEY: 'OPEN_API_SECRET_KEY',
+  OPENAI_MODEL: 'OPENAI_MODEL', // 사용할 OpenAI 모델 선택 (gpt-4o, gpt-5, gpt-4.1 등)
+} as const;

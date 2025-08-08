@@ -6,16 +6,17 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import {
   HTTP_CONSTANTS,
   ENV_KEYS,
-  LOG_CONSTANTS
+  LOG_CONSTANTS,
 } from './common/constants/app.constants';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
   const app = await NestFactory.create(AppModule, {
-    logger: process.env[ENV_KEYS.LOG_LEVEL] === 'verbose'
-      ? ['log', 'error', 'warn', 'debug', 'verbose'] as const
-      : ['log', 'error', 'warn'],
+    logger:
+      process.env[ENV_KEYS.LOG_LEVEL] === 'verbose'
+        ? (['log', 'error', 'warn', 'debug', 'verbose'] as const)
+        : ['log', 'error', 'warn'],
   });
 
   // CORS 설정
@@ -47,8 +48,10 @@ async function bootstrap() {
   // API 버전 관리
   app.enableVersioning({
     type: VersioningType.URI,
-    defaultVersion: process.env[ENV_KEYS.API_VERSION] || HTTP_CONSTANTS.DEFAULT_API_VERSION,
-    prefix: process.env[ENV_KEYS.API_PREFIX] || HTTP_CONSTANTS.DEFAULT_API_PREFIX,
+    defaultVersion:
+      process.env[ENV_KEYS.API_VERSION] || HTTP_CONSTANTS.DEFAULT_API_VERSION,
+    prefix:
+      process.env[ENV_KEYS.API_PREFIX] || HTTP_CONSTANTS.DEFAULT_API_PREFIX,
   });
 
   const port = process.env[ENV_KEYS.PORT] ?? HTTP_CONSTANTS.DEFAULT_PORT;
@@ -56,9 +59,15 @@ async function bootstrap() {
   await app.listen(port);
 
   logger.log(`🚀 Application is running on: http://localhost:${port}`);
-  logger.log(`📚 API Documentation: http://localhost:${port}/${process.env[ENV_KEYS.API_PREFIX] || HTTP_CONSTANTS.DEFAULT_API_PREFIX}${process.env[ENV_KEYS.API_VERSION] || HTTP_CONSTANTS.DEFAULT_API_VERSION}`);
-  logger.log(`🔍 Schema Explorer: http://localhost:${port}/${process.env[ENV_KEYS.API_PREFIX] || HTTP_CONSTANTS.DEFAULT_API_PREFIX}${process.env[ENV_KEYS.API_VERSION] || HTTP_CONSTANTS.DEFAULT_API_VERSION}/schema`);
-  logger.log(`🌍 Environment: ${process.env[ENV_KEYS.NODE_ENV] || 'development'}`);
+  logger.log(
+    `📚 API Documentation: http://localhost:${port}/${process.env[ENV_KEYS.API_PREFIX] || HTTP_CONSTANTS.DEFAULT_API_PREFIX}${process.env[ENV_KEYS.API_VERSION] || HTTP_CONSTANTS.DEFAULT_API_VERSION}`,
+  );
+  logger.log(
+    `🔍 Schema Explorer: http://localhost:${port}/${process.env[ENV_KEYS.API_PREFIX] || HTTP_CONSTANTS.DEFAULT_API_PREFIX}${process.env[ENV_KEYS.API_VERSION] || HTTP_CONSTANTS.DEFAULT_API_VERSION}/schema`,
+  );
+  logger.log(
+    `🌍 Environment: ${process.env[ENV_KEYS.NODE_ENV] || 'development'}`,
+  );
 }
 
 bootstrap().catch((error) => {

@@ -58,8 +58,10 @@ export class LoggingInterceptor implements NestInterceptor {
   }
 
   private generateRequestId(): string {
-    return Math.random().toString(36).substring(2, 15) +
-      Math.random().toString(36).substring(2, 15);
+    return (
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15)
+    );
   }
 
   private logRequest(context: LogContext, request: Request): void {
@@ -80,7 +82,11 @@ export class LoggingInterceptor implements NestInterceptor {
     this.logger.log(`${method} ${url}`, logData);
   }
 
-  private logResponse(context: LogContext, response: Response, data: any): void {
+  private logResponse(
+    context: LogContext,
+    response: Response,
+    data: any,
+  ): void {
     const { requestId, method, url } = context;
     const duration = Date.now() - context.startTime;
 
@@ -96,7 +102,10 @@ export class LoggingInterceptor implements NestInterceptor {
     };
 
     const logLevel = response.statusCode >= 400 ? 'warn' : 'log';
-    this.logger[logLevel](`${method} ${url} ${response.statusCode} - ${duration}ms`, logData);
+    this.logger[logLevel](
+      `${method} ${url} ${response.statusCode} - ${duration}ms`,
+      logData,
+    );
   }
 
   private logError(context: LogContext, error: any): void {
@@ -119,4 +128,4 @@ export class LoggingInterceptor implements NestInterceptor {
 
     this.logger.error(`${method} ${url} - ERROR after ${duration}ms`, logData);
   }
-} 
+}
